@@ -1,5 +1,7 @@
 import turtle as trtl
 import random as rng
+import time
+import threading
 
 # 0.2.0
 
@@ -76,6 +78,7 @@ def rand_pos(coin):
 
 # Starts a coins movement. This method also resets the coin.
 def start_coin(coin):
+    time.sleep(0.0001)
     while True:
         distance_x = abs(coin.xcor() - obj.xcor())
         distance_y = abs(coin.ycor() - obj.ycor())
@@ -131,17 +134,28 @@ def release_down():
 
 '''
 
-wn.onkeypress(movement_up, 'w')
-wn.onkeypress(movement_down, 's')
+def movement():
+    time.sleep(0.001)
+    wn.onkeypress(movement_up, 'w')
+    wn.onkeypress(movement_down, 's')
+
+
+# --- #
+thread1 = threading.Thread(target=movement)
+thread2 = threading.Thread(target=generate_coins)
+
+thread1.start()
+thread2.start()
+
+thread1.join()
+thread2.join()
 
 wn.listen()
 
-# --- #
-
-generate_coins()
-
 for coin in coins:
-    start_coin(coin)
+    thread3 = threading.Thread(target=start_coin, args=coin)
+    thread3.start()
+    thread3.join()
 
 # This block controls the main loop for the game, including the scrolling background.
 if __name__ == '__main__':
