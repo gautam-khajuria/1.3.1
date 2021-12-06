@@ -2,7 +2,7 @@ import turtle as trtl
 import random as rng
 import time
 
-# 0.2.0
+# 0.3.0
 
 # Instantiate objects
 pen = trtl.Turtle()
@@ -19,11 +19,19 @@ score_writer.hideturtle()
 score_writer.speed(0)
 score_writer.penup()
 
+# The player name will not be allowed to contain <::>
+# This is to prevent an injection attack on the leaderboard
+# In which a user would input their name, the sequence, and a really high score to be put into the leaderboard
+# (Basic security lol)
+
 # Get player name for scoring
 player_name = None
-while player_name == "" or player_name == None: # Input validation
-  player_name = trtl.textinput("Enter your name", "Hi player! What is your name?")
-  print (player_name)
+error = 'Enter your name'
+while player_name == "" or player_name == None or '<::>' in player_name: # Input validation
+  player_name = trtl.textinput(error, "Hi player! What is your name?")
+  
+  # If the window is displayed again, there was an error so we can ensure that this will always need to happen
+  error += " (Cannot contain sequence '<::>' or be empty)"
 
 # Score/timer config
 score = 0
