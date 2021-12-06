@@ -114,13 +114,11 @@ def start_coin(coin):
       # Obstacle!
       is_obstacle = True
 
-
     # Assign coin to that 
     coin.shape(shape)
     coin.turtlesize(float(size))
     coin.color(color)
 
-    print(color, shape)
 
     while True:
         # Calculate distance from coin to player
@@ -133,7 +131,7 @@ def start_coin(coin):
             coin.hideturtle()
             print("coll")
             # Update the score if this is a coin, or reduce it if this is an obstacle
-            update_score() if not is_obstacle else decrement_score()
+            update_score() if not is_obstacle else decrement_score() # python ternary gives me a stroke
             break  # collision
         if coin.xcor() <= -200:
             coin.hideturtle()
