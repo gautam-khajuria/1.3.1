@@ -112,28 +112,6 @@ def movement_down():
     obj.penup()
     obj.setpos(obj.xcor(), obj.ycor() - 1)
 
-'''
-def press_up():
-    global seconds
-    seconds = time.time()
-    wn.onkeypress(movement_up, "Up")
-
-
-def release_up():
-    if time.time() - seconds >= 0.1:
-        wn.onkeyrelease(movement_up, 'Up')
-
-
-def press_down():
-    wn.onkeypress(movement_up, "Down")
-
-
-def release_down():
-    if time.time() - seconds >= 0.1:
-        wn.onkeypress(movement_down, 'Down')
-
-'''
-
 def movement():
     time.sleep(0.001)
     wn.onkeypress(movement_up, 'w')
@@ -141,9 +119,14 @@ def movement():
 
 
 # --- #
+
+#create threads for the functions generate_coins and movement
 thread1 = thr.Thread(target=movement)
 thread2 = thr.Thread(target=generate_coins)
+thread1.setDaemon(True)
+thread2.setDaemon(True)
 
+#call the threads
 thread1.start()
 thread2.start()
 
@@ -152,12 +135,20 @@ thread2.join()
 
 wn.listen()
 
-for coin in coins:
-    thread3 = thr.Thread(target=start_coin, args=coin)
-    thread3.start()
-    thread3.join()
+thread3 = thr.Thread(target=start_coin, args=coin)
+thread3.setDaemon(True)
 
+threads = [thread3]
+# create and call the setup for the coinn thread
+for coin in range():
+  threads[0]
+  thread3.start()
+  thread3.join()
+
+
+wn.mainloop()
 # This block controls the main loop for the game, including the scrolling background.
+'''
 if __name__ == '__main__':
     image_width = 400
 
@@ -171,7 +162,7 @@ if __name__ == '__main__':
 
     wn.mainloop()
     
-''''
+
   while True:
     camera_x += camera_dx
     camera_x %= image_width

@@ -1,8 +1,9 @@
 import turtle as trtl
 import random as rng
+import leaderboard as lb
 import time
 
-# 0.3.0
+# 0.3.1
 
 # Instantiate objects
 pen = trtl.Turtle()
@@ -12,6 +13,12 @@ obj.penup()
 wn = trtl.Screen()
 
 font_setup = ("Arial", 20, "bold")
+
+# Timer drawing turtle
+counter = trtl.Turtle()
+counter.speed(0)
+counter.penup()
+counter.hideturtle()
 
 # Score turtle
 score_writer = trtl.Turtle()
@@ -29,12 +36,15 @@ player_name = None
 error = 'Enter your name'
 while player_name == "" or player_name == None or '<::>' in player_name: # Input validation
   player_name = trtl.textinput(error, "Hi player! What is your name?")
+
+  # Instructions: Press 'w' or 's' to move up or down, and collect all of the moving coins. However, DO NOT collect objects that are red or are a triangle. If you do, you lose a point.
   
   # If the window is displayed again, there was an error so we can ensure that this will always need to happen
   error += " (Cannot contain sequence '<::>' or be empty)"
 
 # Score/timer config
 score = 0
+timer = 30
 timer_up = False
 
 # Go to proper location
@@ -63,6 +73,23 @@ obj.shape(apple_image)
 coin_image = 'pear.gif'
 wn.addshape(coin_image)
 
+# Manages the leaderboard by checking when the timer is over and then adding the score to the leaderboard
+def manage_lb(player_name, player_score):
+  pass
+
+
+def countdown():
+    global timer, timer_up, score, player_name
+    counter.clear()
+    if timer <= 0:
+        counter.goto(-25, 0)
+        timer_up = True
+        manage_lb(player_name, score)
+    else:
+        counter.goto(150, 130)
+        counter.write(str(timer), font=font_setup)
+        timer -= 1
+        counter.getscreen().ontimer(countdown, 1000)
 
 # Updates the score variable, checking to make sure the timer is not complete. This also prints the score to the screen
 def update_score():
@@ -162,13 +189,19 @@ def start_coin(coin):
 def movement_up():
     global obj
     obj.penup()
-    obj.goto(obj.xcor(), obj.ycor() + 5)
+    if obj.ycor() <= 150:
+      obj.goto(obj.xcor(), obj.ycor() + 5)
+    else:
+      pass
 
 # Moves the apple object down by 5 pixels
 def movement_down():
     global obj
     obj.penup()
-    obj.setpos(obj.xcor(), obj.ycor() - 5)
+    if obj.ycor() >= -150:
+      obj.setpos(obj.xcor(), obj.ycor() - 5)
+    else:
+      pass
 
 '''
 def press_up():
@@ -194,9 +227,8 @@ def release_down():
 
 # Creates movement handlers for the up and down keys (w, s)
 def movement():
-    wn.onkeypress(movement_up, 'w')
-    wn.onkeypress(movement_down, 's')
-
+  wn.onkeypress(movement_up, 'w')
+  wn.onkeypress(movement_down, 's')
 
 # --- #
 
@@ -219,6 +251,7 @@ if __name__ == '__main__':
     wn.addshape(background_image)
 
     wn.setup(height=320, width=image_width)
+    wn.ontimer(countdown, 1000)
 
     wn.mainloop()
     
