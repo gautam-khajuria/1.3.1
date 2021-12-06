@@ -3,7 +3,11 @@ import random as rng
 import leaderboard as lb
 import time
 
-# 0.3.1
+'''
+Instructions: Press 'w' or 's' to move up or down, and collect all of the moving coins. However, DO NOT collect objects that are red or are a triangle. If you do, you lose a point.
+'''
+
+# 0.3.2
 
 # Instantiate objects
 pen = trtl.Turtle()
@@ -36,8 +40,6 @@ player_name = None
 error = 'Enter your name'
 while player_name == "" or player_name == None or '<::>' in player_name: # Input validation
   player_name = trtl.textinput(error, "Hi player! What is your name?")
-
-  # Instructions: Press 'w' or 's' to move up or down, and collect all of the moving coins. However, DO NOT collect objects that are red or are a triangle. If you do, you lose a point.
   
   # If the window is displayed again, there was an error so we can ensure that this will always need to happen
   error += " (Cannot contain sequence '<::>' or be empty)"
