@@ -1,5 +1,0 @@
-John Doe<::>13
-Jane<::>11
-Adam<::>8
-Gautam<::>5
-Sreyas<::>5
