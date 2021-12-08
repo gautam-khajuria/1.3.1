@@ -36,7 +36,7 @@ pen.speed(0)
 
 # This creates an object as a APPLE balloon
 pear_image = 'pear.gif'
-apple_image = 'apple.gif'
+apple_image = 'ufo.gif'
 wn.addshape(pear_image)
 wn.addshape(apple_image)
 obj.shape(apple_image)

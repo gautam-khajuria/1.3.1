@@ -7,7 +7,7 @@ import time
 Instructions: Press 'w' or 's' to move up or down, and collect all of the moving coins. However, DO NOT collect objects that are red or are a triangle. If you do, you lose a point.
 '''
 
-# 0.3.2
+# 0.3.3
 
 # Instantiate objects
 pen = trtl.Turtle()
@@ -52,7 +52,7 @@ while player_name == "" or player_name == None or '<::>' in player_name: # Input
 
 # Score/timer config
 score = 0
-timer = 10
+timer = 30
 timer_up = False
 
 # Go to proper location
@@ -77,10 +77,10 @@ coin_sizes = [0.5, 1, 2]
 obj.speed(0)
 pen.speed(0)
 
-# This creates an object as a APPLE balloon
-apple_image = 'apple.gif'
-wn.addshape(apple_image)
-obj.shape(apple_image)
+# This creates an object as a ufo 
+ufo_image = 'ufo.gif'
+wn.addshape(ufo_image)
+obj.shape(ufo_image)
 
 # Setup coins
 coin_image = 'pear.gif'
@@ -193,7 +193,7 @@ def start_coin(coin):
 
         coin.backward(2.5)
         # Check for collision or screen end
-        if distance_x <= 20 and distance_y <= 45:
+        if distance_x <= 20 and distance_y <= 47:
             coin.hideturtle()
             print("coll")
             # Update the score if this is a coin, or reduce it if this is an obstacle
@@ -226,7 +226,7 @@ def movement_up():
     if timer_up:
       return
     obj.penup()
-    if obj.ycor() <= 150: # Boundary
+    if obj.ycor() <= 125: # Boundary Top
       obj.goto(obj.xcor(), obj.ycor() + 5)
 
 # Moves the apple object down by 5 pixels
@@ -235,7 +235,7 @@ def movement_down():
     if timer_up:
       return
     obj.penup()
-    if obj.ycor() >= -150: # Boundary bottom
+    if obj.ycor() >= -125: # Boundary bottom
       obj.setpos(obj.xcor(), obj.ycor() - 5)
 
 # Creates key listeners for the up and down keys (either w/s, or arrow keys)
@@ -258,6 +258,10 @@ def movement():
   if mode == 'arrow':
     wn.onkeypress(movement_up, 'Up')
     wn.onkeypress(movement_down, 'Down')
+  
+# Sets object to the starting position
+obj.penup()
+obj.setpos(-100, obj.ycor())
 
 # --- #
 

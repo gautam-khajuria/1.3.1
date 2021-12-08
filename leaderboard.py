@@ -2,9 +2,9 @@
 # The leaderboard module to be used in a122 solution.
 
 # set the levels of scoring
-bronze_score = 15
-silver_score = 20
-gold_score = 25
+bronze_score = 5
+silver_score = 10
+gold_score = 15
 
 
 # load leaderboard from file
@@ -62,7 +62,7 @@ def draw_leaderboard(leader_names, leader_scores, high_scorer, turtle_object, pl
     font_setup = ("Arial", 20, "normal")
     turtle_object.clear()
     turtle_object.penup()
-    turtle_object.goto(-200, 100)
+    turtle_object.goto(-220, 120)
     turtle_object.hideturtle()
     turtle_object.down()
     leader_index = 0
@@ -74,19 +74,20 @@ def draw_leaderboard(leader_names, leader_scores, high_scorer, turtle_object, pl
             str(leader_index + 1) + "\t" + leader_names[leader_index] + "\t" + str(leader_scores[leader_index]),
             font=font_setup)
         turtle_object.penup()
-        turtle_object.goto(-200, int(turtle_object.ycor()) - 50)
+        turtle_object.goto(-220, int(turtle_object.ycor()) - 50)
         turtle_object.down()
         leader_index = leader_index + 1
 
     # Display message about player making/not making leaderboard based on high_scorer
+
     if high_scorer:
-        turtle_object.write("Congratulations! You made the leaderboard!", font=font_setup)
+        turtle_object.write("Congratulations! You made\nthe leaderboard!", font=("Arial", 10, "normal"))
     else:
-        turtle_object.write("Sorry, you didn't make the leaderboard. Maybe next time!\nScore: " + player_score, font=font_setup)
+        turtle_object.write("Sorry, you didn't make the leaderboard. Maybe next time!\nScore: " + str(player_score), font=("Arial", 10, "normal"))
 
     # move turtle to a new line
     turtle_object.penup()
-    turtle_object.goto(-200, int(turtle_object.ycor()) - 50)
+    turtle_object.goto(-220, int(turtle_object.ycor()) - 50)
     turtle_object.pendown()
 
     if bronze_score <= player_score < silver_score:
