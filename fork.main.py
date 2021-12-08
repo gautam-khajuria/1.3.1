@@ -24,6 +24,12 @@ counter.speed(0)
 counter.penup()
 counter.hideturtle()
 
+# lb turtle
+leaderboard_turtle = trtl.Turtle()
+leaderboard_turtle.speed(0)
+leaderboard_turtle.penup()
+leaderboard_turtle.hideturtle()
+
 # Score turtle
 score_writer = trtl.Turtle()
 score_writer.hideturtle()
@@ -46,7 +52,7 @@ while player_name == "" or player_name == None or '<::>' in player_name: # Input
 
 # Score/timer config
 score = 0
-timer = 5
+timer = 10
 timer_up = False
 
 # Go to proper location
@@ -56,6 +62,11 @@ score_writer.write("Score starts at 0", font=font_setup)
 # Coins control
 amount_of_coins = 1
 coins = []
+
+# Leaderboard config
+leaderboard_file_name = "lb.txt"
+leader_names_list = []
+leader_scores_list = []
 
 # Following lists control the shape, size, and colors of the coins. This makes the game more interesting, and makes it harder to discern whether or not it is a coin or obstacle
 coin_colors = ['green', 'blue', 'yellow', 'orange', 'pink', 'red']
@@ -76,8 +87,20 @@ coin_image = 'pear.gif'
 wn.addshape(coin_image)
 
 # Manages the leaderboard by checking when the timer is over and then adding the score to the leaderboard
-def manage_lb(player_name, player_score):
-  lb.insert_player(player_name, player_score)
+def manage_lb():
+    global leader_scores_list
+    global leader_names_list
+    global score
+    global leaderboard_turtle
+
+    # load all the leaderboard records into the lists
+    lb.load_leaderboard(leaderboard_file_name, leader_names_list, leader_scores_list)
+
+    if len(leader_scores_list) < 5 or score > leader_scores_list[4]:
+        lb.update_leaderboard(leaderboard_file_name, leader_names_list, leader_scores_list, player_name, score)
+        lb.draw_leaderboard(leader_names_list, leader_scores_list, True, leaderboard_turtle, score)
+    else:
+        lb.draw_leaderboard(leader_names_list, leader_scores_list, False, leaderboard_turtle, score)
 
 # Manages the timer, and also counts it down
 def countdown():
@@ -86,7 +109,7 @@ def countdown():
     if timer <= 0:
         counter.goto(-25, 0)
         timer_up = True
-        manage_lb(player_name, score)
+        manage_lb()
     else:
         counter.goto(150, 130)
         counter.write(str(timer), font=font_setup)
@@ -193,7 +216,8 @@ def start_coin(coin):
     coin_sizes.append(size)
 
     # Restart its movement
-    start_coin(coin)
+    if not timer_up:
+      start_coin(coin)
 
 
 # Moves the apple object up by 5 pixels
@@ -259,6 +283,13 @@ if __name__ == '__main__':
 
     for coin in coins:
       start_coin(coin)
+
+    print("end of game")
+    # Hide everyone
+    obj.hideturtle()
+    for coin in coins:
+      coin.hideturtle()
+    score_writer.clear()
 
     wn.mainloop()
     
