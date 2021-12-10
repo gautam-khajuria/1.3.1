@@ -1,5 +1,4 @@
-keyboard<::>6
-sdsd<::>4
-wewew<::>3
-Sreyas<::>2
-sdsd<::>2
+Sreyas<::>10
+GGG<::>0
+G<::>0
+test<::>-1

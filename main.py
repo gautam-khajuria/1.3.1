@@ -12,6 +12,8 @@ obj = trtl.Turtle()
 obj.penup()
 wn = trtl.Screen()
 
+# Misc
+player_speed = 1
 font_setup = ("Arial", 20, "bold")
 
 # Score turtle
@@ -27,6 +29,7 @@ timer_up = False
 score_writer.goto(-200, 130)
 score_writer.write(score, font=font_setup)  
 
+# Coins
 amount_of_coins = 1
 coins = []
 
@@ -100,17 +103,17 @@ def start_coin(coin):
     start_coin(coin)
 
 
-# 
+# Moves the player up by the player_speed variable
 def movement_up():
     global obj
     obj.penup()
-    obj.goto(obj.xcor(), obj.ycor() + 1)
+    obj.goto(obj.xcor(), obj.ycor() + player_speed)
 
-
+# Moves the player up by the player_speed variable
 def movement_down():
     global obj
     obj.penup()
-    obj.setpos(obj.xcor(), obj.ycor() - 1)
+    obj.setpos(obj.xcor(), obj.ycor() - player_speed)
 
 def movement():
     time.sleep(0.001)

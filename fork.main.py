@@ -4,10 +4,10 @@ import leaderboard as lb
 import time
 
 '''
-Instructions: Press 'w' or 's' to move up or down, and collect all of the moving coins. However, DO NOT collect objects that are red or are a triangle. If you do, you lose a point.
+Instructions: Collect all of the moving coins. However, DO NOT collect objects that are red or are a triangle. If you do, you lose a point.  The goal is to maximise points!
 '''
 
-# 0.3.3
+# 0.4.3
 
 # Instantiate objects
 pen = trtl.Turtle()
@@ -16,7 +16,14 @@ obj = trtl.Turtle()
 obj.penup()
 wn = trtl.Screen()
 
+# Misc
+player_speed = 5
+coin_speed = 2.5
 font_setup = ("Arial", 20, "bold")
+
+# Collisions
+y_am = 20
+x_am = 45
 
 # Timer drawing turtle
 counter = trtl.Turtle()
@@ -52,7 +59,7 @@ while player_name == "" or player_name == None or '<::>' in player_name: # Input
 
 # Score/timer config
 score = 0
-timer = 30
+timer = 5
 timer_up = False
 
 # Go to proper location
@@ -121,6 +128,15 @@ def update_score():
     global score, score_writer, timer_up
 
     score += 1  # increment score
+    # Since Sreyas is a superior name, the player gets 10 points instead of 1!
+    # Sorry Guatum :(
+    # DNC easter egg 
+    if player_name == "Sreyas":
+      score+=9
+    if player_name == 'dnc':
+      dnc = trtl.Turtle()
+      wn.addshape('dnc.gif')
+      dnc.shape('dnc.gif')
     score_writer.clear()
     if timer_up:
         return
@@ -191,9 +207,10 @@ def start_coin(coin):
         distance_y = abs(coin.ycor() - obj.ycor())
 
 
-        coin.backward(2.5)
+        coin.backward(coin_speed)
+
         # Check for collision or screen end
-        if distance_x <= 20 and distance_y <= 47:
+        if distance_x <= x_am and distance_y <= y_am:
             coin.hideturtle()
             print("coll")
             # Update the score if this is a coin, or reduce it if this is an obstacle
@@ -204,6 +221,7 @@ def start_coin(coin):
             coin.hideturtle()
             print("end screen")
             break
+
 
         wn.update()
 
@@ -219,24 +237,29 @@ def start_coin(coin):
     if not timer_up:
       start_coin(coin)
 
+# Moves the player object by the inputted value in the y axis. No restrictions, just moves in y space.
+def movement_y(am):
+    global obj
+    obj.penup()
+    obj.goto(obj.xcor(), obj.ycor() + am)
 
-# Moves the apple object up by 5 pixels
+
+# Moves the player object up by 5 pixels
 def movement_up():
     global obj, timer_up
     if timer_up:
       return
-    obj.penup()
     if obj.ycor() <= 125: # Boundary Top
-      obj.goto(obj.xcor(), obj.ycor() + 5)
+      movement_y(player_speed)
 
-# Moves the apple object down by 5 pixels
+# Moves the player object down by 5 pixels
 def movement_down():
     global obj, timer_up
     if timer_up:
       return
-    obj.penup()
     if obj.ycor() >= -125: # Boundary bottom
-      obj.setpos(obj.xcor(), obj.ycor() - 5)
+      movement_y(-player_speed)
+      
 
 # Creates key listeners for the up and down keys (either w/s, or arrow keys)
 def movement():
@@ -294,6 +317,9 @@ if __name__ == '__main__':
     for coin in coins:
       coin.hideturtle()
     score_writer.clear()
+    # Adds the score and middle to board
+    print("Congrats!! You got a score of...", score)
+
 
     wn.mainloop()
     
