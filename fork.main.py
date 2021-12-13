@@ -1,8 +1,13 @@
 import turtle as trtl
 import random as rng
+import leaderboard as lb
 import time
 
-# 0.2.0
+'''
+Instructions: Collect all of the moving coins. However, DO NOT collect objects that are red or are a triangle. If you do, you lose a point. The goal is to maximise points!
+'''
+
+# 0.4.3
 
 # Instantiate objects
 pen = trtl.Turtle()
@@ -11,7 +16,26 @@ obj = trtl.Turtle()
 obj.penup()
 wn = trtl.Screen()
 
+# Misc
+player_speed = 5
+coin_speed = 2.5
 font_setup = ("Arial", 20, "bold")
+
+# Collisions
+y_am = 20
+x_am = 45
+
+# Timer drawing turtle
+counter = trtl.Turtle()
+counter.speed(0)
+counter.penup()
+counter.hideturtle()
+
+# lb turtle
+leaderboard_turtle = trtl.Turtle()
+leaderboard_turtle.speed(0)
+leaderboard_turtle.penup()
+leaderboard_turtle.hideturtle()
 
 # Score turtle
 score_writer = trtl.Turtle()
@@ -19,14 +43,23 @@ score_writer.hideturtle()
 score_writer.speed(0)
 score_writer.penup()
 
+# The player name will not be allowed to contain <::>
+# This is to prevent an injection attack on the leaderboard
+# In which a user would input their name, the sequence, and a really high score to be put into the leaderboard
+# (Basic security lol)
+
 # Get player name for scoring
 player_name = None
-while player_name == "" or player_name == None: # Input validation
-  player_name = trtl.textinput("Enter your name", "Hi player! What is your name?")
-  print (player_name)
+error = 'Enter your name'
+while player_name == "" or player_name == None or '<::>' in player_name: # Input validation
+  player_name = trtl.textinput(error, "Hi player! What is your name?")
+  
+  # If the window is displayed again, there was an error so we can ensure that this will always need to happen
+  error += " (Cannot contain sequence '<::>' or be empty)"
 
 # Score/timer config
 score = 0
+timer = 30
 timer_up = False
 
 # Go to proper location
@@ -37,30 +70,73 @@ score_writer.write("Score starts at 0", font=font_setup)
 amount_of_coins = 1
 coins = []
 
+# Leaderboard config
+leaderboard_file_name = "lb.txt"
+leader_names_list = []
+leader_scores_list = []
+
 # Following lists control the shape, size, and colors of the coins. This makes the game more interesting, and makes it harder to discern whether or not it is a coin or obstacle
 coin_colors = ['green', 'blue', 'yellow', 'orange', 'pink', 'red']
 coin_shapes = ['turtle', 'square', 'circle', 'arrow', 'classic', 'triangle']
-coin_sizes = [1]
+coin_sizes = [0.5, 1, 2]
 
 # Set Speed Fastest
 obj.speed(0)
 pen.speed(0)
 
-# This creates an object as a APPLE balloon
-apple_image = 'apple.gif'
-wn.addshape(apple_image)
-obj.shape(apple_image)
+# This creates an object as a ufo 
+ufo_image = 'ufo.gif'
+wn.addshape(ufo_image)
+obj.shape(ufo_image)
 
 # Setup coins
 coin_image = 'pear.gif'
 wn.addshape(coin_image)
 
+# Manages the leaderboard by checking when the timer is over and then adding the score to the leaderboard
+def manage_lb():
+    global leader_scores_list
+    global leader_names_list
+    global score
+    global leaderboard_turtle
+
+    # load all the leaderboard records into the lists
+    lb.load_leaderboard(leaderboard_file_name, leader_names_list, leader_scores_list)
+
+    if len(leader_scores_list) < 5 or score > leader_scores_list[4]:
+        lb.update_leaderboard(leaderboard_file_name, leader_names_list, leader_scores_list, player_name, score)
+        lb.draw_leaderboard(leader_names_list, leader_scores_list, True, leaderboard_turtle, score)
+    else:
+        lb.draw_leaderboard(leader_names_list, leader_scores_list, False, leaderboard_turtle, score)
+
+# Manages the timer, and also counts it down
+def countdown():
+    global timer, timer_up, score, player_name
+    counter.clear()
+    if timer <= 0:
+        counter.goto(-25, 0)
+        timer_up = True
+        manage_lb()
+    else:
+        counter.goto(150, 130)
+        counter.write(str(timer), font=font_setup)
+        timer -= 1
+        counter.getscreen().ontimer(countdown, 1000)
 
 # Updates the score variable, checking to make sure the timer is not complete. This also prints the score to the screen
 def update_score():
     global score, score_writer, timer_up
 
     score += 1  # increment score
+    # Since Sreyas is a superior name, the player gets 10 points instead of 1!
+    # Sorry Guatum :(
+    # DNC easter egg 
+    if player_name == "Sreyas":
+      score+=9
+    if player_name == 'dnc':
+      dnc = trtl.Turtle()
+      wn.addshape('dnc.gif')
+      dnc.shape('dnc.gif')
     score_writer.clear()
     if timer_up:
         return
@@ -99,6 +175,8 @@ def randbound(arr):
 
 # Starts a coins movement. This method also resets the coin.
 def start_coin(coin):
+    global timer_up
+
     time.sleep(0.0001)
     coin.showturtle()
 
@@ -114,31 +192,38 @@ def start_coin(coin):
       # Obstacle!
       is_obstacle = True
 
-
     # Assign coin to that 
     coin.shape(shape)
     coin.turtlesize(float(size))
     coin.color(color)
 
-    print(color, shape)
 
     while True:
+        if timer_up:
+          return
+
         # Calculate distance from coin to player
         distance_x = abs(coin.xcor() - obj.xcor())
         distance_y = abs(coin.ycor() - obj.ycor())
 
-        coin.backward(1)
+
+        coin.backward(coin_speed)
+
         # Check for collision or screen end
-        if distance_x <= 20 and distance_y <= 60:
+        if distance_x <= x_am and distance_y <= y_am:
             coin.hideturtle()
             print("coll")
             # Update the score if this is a coin, or reduce it if this is an obstacle
-            update_score() if not is_obstacle else decrement_score()
+            update_score() if not is_obstacle else decrement_score() # python ternary gives me a stroke
+
             break  # collision
         if coin.xcor() <= -200:
             coin.hideturtle()
             print("end screen")
             break
+
+
+        wn.update()
 
     # Collision has occured, or screen has been reached
     rand_pos(coin)
@@ -149,60 +234,64 @@ def start_coin(coin):
     coin_sizes.append(size)
 
     # Restart its movement
-    start_coin(coin)
+    if not timer_up:
+      start_coin(coin)
+
+# Moves the player object by the inputted value in the y axis. No restrictions, just moves in y space.
+def movement_y(am):
+    global obj
+    obj.penup()
+    obj.goto(obj.xcor(), obj.ycor() + am)
 
 
-# Moves the apple object up by 5 pixels
+# Moves the player object up by 5 pixels
 def movement_up():
-    global obj
-    obj.penup()
-    obj.goto(obj.xcor(), obj.ycor() + 5)
+    global obj, timer_up
+    if timer_up:
+      return
+    if obj.ycor() <= 125: # Boundary Top
+      movement_y(player_speed)
 
-# Moves the apple object down by 5 pixels
+# Moves the player object down by 5 pixels
 def movement_down():
-    global obj
-    obj.penup()
-    obj.setpos(obj.xcor(), obj.ycor() - 5)
+    global obj, timer_up
+    if timer_up:
+      return
+    if obj.ycor() >= -125: # Boundary bottom
+      movement_y(-player_speed)
+      
 
-'''
-def press_up():
-    global seconds
-    seconds = time.time()
-    wn.onkeypress(movement_up, "Up")
-
-
-def release_up():
-    if time.time() - seconds >= 0.1:
-        wn.onkeyrelease(movement_up, 'Up')
-
-
-def press_down():
-    wn.onkeypress(movement_up, "Down")
-
-
-def release_down():
-    if time.time() - seconds >= 0.1:
-        wn.onkeypress(movement_down, 'Down')
-
-'''
-
-# Creates movement handlers for the up and down keys (w, s)
+# Creates key listeners for the up and down keys (either w/s, or arrow keys)
 def movement():
+  # Get mode of input
+  mode = ''
+  while True:
+    mode = trtl.textinput('Key Input Type', "Do you prefer arrow keys (up and down) or keyboard keys (w and s) for movement? \nEnter 'keyboard' for keyboard keys and 'arrow' for arrow keys.")
+
+    # Check if valid input has been entered, and if so break out of the loop
+    if mode == 'keyboard' or mode == 'arrow':
+      break
+
+  # User chose keyboard input
+  if mode == 'keyboard':
     wn.onkeypress(movement_up, 'w')
     wn.onkeypress(movement_down, 's')
-
-
-# --- #
+  
+  # User chose arrow input
+  if mode == 'arrow':
+    wn.onkeypress(movement_up, 'Up')
+    wn.onkeypress(movement_down, 'Down')
+  
+# Sets object to the starting position
+obj.penup()
+obj.setpos(-100, obj.ycor())
 
 # Starts and listens for key presses
 movement()
 wn.listen()
 
-# Generates, and starts all coins
-generate_coins()
-
-for coin in coins:
-  start_coin(coin)
+# Start the timer
+countdown()
 
 # Controls main loop for game, including background, dimensions, etc
 if __name__ == '__main__':
@@ -211,8 +300,24 @@ if __name__ == '__main__':
     # backround image set up
     background_image = "background.gif"
     wn.addshape(background_image)
-
+    wn.bgpic(background_image)
     wn.setup(height=320, width=image_width)
+
+    # Generates, and starts all coins
+    generate_coins()
+
+    for coin in coins:
+      start_coin(coin)
+
+    print("end of game")
+    # Hide everyone
+    obj.hideturtle()
+    for coin in coins:
+      coin.hideturtle()
+    score_writer.clear()
+    # Adds the score and middle to board
+    print("Congrats!! You got a score of...", score)
+
 
     wn.mainloop()
     

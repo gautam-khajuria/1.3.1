@@ -12,6 +12,8 @@ obj = trtl.Turtle()
 obj.penup()
 wn = trtl.Screen()
 
+# Misc
+player_speed = 1
 font_setup = ("Arial", 20, "bold")
 
 # Score turtle
@@ -27,6 +29,7 @@ timer_up = False
 score_writer.goto(-200, 130)
 score_writer.write(score, font=font_setup)  
 
+# Coins
 amount_of_coins = 1
 coins = []
 
@@ -36,7 +39,7 @@ pen.speed(0)
 
 # This creates an object as a APPLE balloon
 pear_image = 'pear.gif'
-apple_image = 'apple.gif'
+apple_image = 'ufo.gif'
 wn.addshape(pear_image)
 wn.addshape(apple_image)
 obj.shape(apple_image)
@@ -100,39 +103,17 @@ def start_coin(coin):
     start_coin(coin)
 
 
-# 
+# Moves the player up by the player_speed variable
 def movement_up():
     global obj
     obj.penup()
-    obj.goto(obj.xcor(), obj.ycor() + 1)
+    obj.goto(obj.xcor(), obj.ycor() + player_speed)
 
-
+# Moves the player up by the player_speed variable
 def movement_down():
     global obj
     obj.penup()
-    obj.setpos(obj.xcor(), obj.ycor() - 1)
-
-'''
-def press_up():
-    global seconds
-    seconds = time.time()
-    wn.onkeypress(movement_up, "Up")
-
-
-def release_up():
-    if time.time() - seconds >= 0.1:
-        wn.onkeyrelease(movement_up, 'Up')
-
-
-def press_down():
-    wn.onkeypress(movement_up, "Down")
-
-
-def release_down():
-    if time.time() - seconds >= 0.1:
-        wn.onkeypress(movement_down, 'Down')
-
-'''
+    obj.setpos(obj.xcor(), obj.ycor() - player_speed)
 
 def movement():
     time.sleep(0.001)
@@ -141,9 +122,14 @@ def movement():
 
 
 # --- #
+
+#create threads for the functions generate_coins and movement
 thread1 = thr.Thread(target=movement)
 thread2 = thr.Thread(target=generate_coins)
+thread1.setDaemon(True)
+thread2.setDaemon(True)
 
+#call the threads
 thread1.start()
 thread2.start()
 
@@ -152,12 +138,20 @@ thread2.join()
 
 wn.listen()
 
-for coin in coins:
-    thread3 = thr.Thread(target=start_coin, args=coin)
-    thread3.start()
-    thread3.join()
+thread3 = thr.Thread(target=start_coin, args=coin)
+thread3.setDaemon(True)
 
+threads = [thread3]
+# create and call the setup for the coinn thread
+for coin in range():
+  threads[0]
+  thread3.start()
+  thread3.join()
+
+
+wn.mainloop()
 # This block controls the main loop for the game, including the scrolling background.
+'''
 if __name__ == '__main__':
     image_width = 400
 
@@ -171,7 +165,7 @@ if __name__ == '__main__':
 
     wn.mainloop()
     
-''''
+
   while True:
     camera_x += camera_dx
     camera_x %= image_width
