@@ -4,7 +4,7 @@ import leaderboard as lb
 import time
 
 '''
-Instructions: Collect all of the moving coins. However, DO NOT collect objects that are red or are a triangle. If you do, you lose a point.  The goal is to maximise points!
+Instructions: Collect all of the moving coins. However, DO NOT collect objects that are red or are a triangle. If you do, you lose a point. The goal is to maximise points!
 '''
 
 # 0.4.3
@@ -59,7 +59,7 @@ while player_name == "" or player_name == None or '<::>' in player_name: # Input
 
 # Score/timer config
 score = 0
-timer = 5
+timer = 30
 timer_up = False
 
 # Go to proper location
@@ -285,8 +285,6 @@ def movement():
 # Sets object to the starting position
 obj.penup()
 obj.setpos(-100, obj.ycor())
-
-# --- #
 
 # Starts and listens for key presses
 movement()
