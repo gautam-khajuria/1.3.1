@@ -103,6 +103,8 @@ def manage_lb():
     # load all the leaderboard records into the lists
     lb.load_leaderboard(leaderboard_file_name, leader_names_list, leader_scores_list)
 
+    # Check if the player qualifies for leaderboard, and update it
+    # Otherwise, draw it regardless
     if len(leader_scores_list) < 5 or score > leader_scores_list[4]:
         lb.update_leaderboard(leaderboard_file_name, leader_names_list, leader_scores_list, player_name, score)
         lb.draw_leaderboard(leader_names_list, leader_scores_list, True, leaderboard_turtle, score)
@@ -113,6 +115,9 @@ def manage_lb():
 def countdown():
     global timer, timer_up, score, player_name
     counter.clear()
+
+    # Sets the timer_up to true, and manages the lb if timer is less than or equal to zero
+    # Otherwise, write the new time to the screen
     if timer <= 0:
         counter.goto(-25, 0)
         timer_up = True
@@ -128,15 +133,19 @@ def update_score():
     global score, score_writer, timer_up
 
     score += 1  # increment score
+
     # Since Sreyas is a superior name, the player gets 10 points instead of 1!
-    # Sorry Guatum :(
-    # DNC easter egg 
+    # Sorry Gautam :(
     if player_name == "Sreyas":
       score+=9
+
+    # DNC easter egg 
     if player_name == 'dnc':
       dnc = trtl.Turtle()
       wn.addshape('dnc.gif')
       dnc.shape('dnc.gif')
+    
+    # Write new score to screen, or return if time is up
     score_writer.clear()
     if timer_up:
         return
@@ -199,6 +208,7 @@ def start_coin(coin):
 
 
     while True:
+        # End if the timer is finished
         if timer_up:
           return
 
@@ -206,7 +216,7 @@ def start_coin(coin):
         distance_x = abs(coin.xcor() - obj.xcor())
         distance_y = abs(coin.ycor() - obj.ycor())
 
-
+        # Move backward
         coin.backward(coin_speed)
 
         # Check for collision or screen end
@@ -217,13 +227,14 @@ def start_coin(coin):
             update_score() if not is_obstacle else decrement_score() # python ternary gives me a stroke
 
             break  # collision
+
+        # Checks if the coin has reached the end of the screen
         if coin.xcor() <= -200:
             coin.hideturtle()
             print("end screen")
             break
 
-
-        wn.update()
+        wn.update() # Update screen
 
     # Collision has occured, or screen has been reached
     rand_pos(coin)
@@ -285,6 +296,8 @@ def movement():
 # Sets object to the starting position
 obj.penup()
 obj.setpos(-100, obj.ycor())
+
+
 
 # Starts and listens for key presses
 movement()
